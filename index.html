@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Momentum OS</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" data-theme="dark">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Thursday, Jun 11</p>
+          <h1>Momentum OS</h1>
+        </div>
+        <div class="top-actions">
+          <span class="save-indicator" id="saveState">Saved</span>
+          <button class="alert-button" aria-label="Notifications" title="Notifications"></button>
+          <button class="icon-button" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+            <span class="icon-sun"></span>
+          </button>
+        </div>
+      </header>
+
+      <nav class="bottom-nav" aria-label="Primary">
+        <button class="active" data-target="dashboard"><span>Dashboard</span></button>
+        <button data-target="builder"><span>Builder</span></button>
+        <button data-target="fitness"><span>Fitness</span></button>
+        <button data-target="nutrition"><span>Nutrition</span></button>
+        <button data-target="planning"><span>Plan</span></button>
+        <button data-target="coach"><span>AI</span></button>
+      </nav>
+
+      <main>
+        <section class="view active" id="dashboard" aria-labelledby="dashboard-title">
+          <div class="section-heading page-heading">
+            <div>
+              <p class="eyebrow">Personal command center</p>
+              <h2 id="dashboard-title">Build your day</h2>
+            </div>
+            <button class="primary-button" data-target="builder" data-jump>Customize</button>
+          </div>
+
+          <section class="panel hero-panel">
+            <div>
+              <p class="eyebrow">Life score</p>
+              <h2>82</h2>
+              <p>Your custom system is balanced across study, workouts, meals, planning, and recovery.</p>
+            </div>
+            <div class="ring" style="--value: 82"><span>82%</span></div>
+          </section>
+
+          <div class="widget-toolbar">
+            <button class="secondary-button" data-add-widget="tracker">Tracker</button>
+            <button class="secondary-button" data-add-widget="workout">Workout</button>
+            <button class="secondary-button" data-add-widget="nutrition">Nutrition</button>
+            <button class="secondary-button" data-add-widget="finance">Finance</button>
+          </div>
+
+          <div class="dashboard-grid" id="dashboardGrid" aria-label="Custom dashboard widgets">
+            <article class="widget-card large" draggable="true" data-widget="study">
+              <div class="widget-head">
+                <span class="widget-icon blue"></span>
+                <div><h3>Study tracker</h3><p>Custom goal / 18 day streak</p></div>
+                <div class="widget-actions">
+                  <button class="resize-widget" aria-label="Resize widget">Resize</button>
+                  <button class="remove-widget" aria-label="Remove widget">Remove</button>
+                </div>
+              </div>
+              <div class="progress-row"><div class="progress-track"><span style="width: 76%"></span></div><strong>76%</strong></div>
+              <div class="bar-chart compact"><span style="--h: 48%"></span><span style="--h: 80%"></span><span style="--h: 64%"></span><span style="--h: 92%"></span><span style="--h: 68%"></span></div>
+            </article>
+
+            <article class="widget-card" draggable="true" data-widget="workout">
+              <div class="widget-head">
+                <span class="widget-icon green"></span>
+                <div><h3>Workout plan</h3><p>Upper body / PR week</p></div>
+                <div class="widget-actions">
+                  <button class="resize-widget" aria-label="Resize widget">Resize</button>
+                  <button class="remove-widget" aria-label="Remove widget">Remove</button>
+                </div>
+              </div>
+              <div class="progress-row"><div class="progress-track"><span style="width: 63%"></span></div><strong>63%</strong></div>
+            </article>
+
+            <article class="widget-card" draggable="true" data-widget="nutrition">
+              <div class="widget-head">
+                <span class="widget-icon amber"></span>
+                <div><h3>Nutrition</h3><p>Protein on target</p></div>
+                <div class="widget-actions">
+                  <button class="resize-widget" aria-label="Resize widget">Resize</button>
+                  <button class="remove-widget" aria-label="Remove widget">Remove</button>
+                </div>
+              </div>
+              <div class="macro-row"><span>2,120 kcal</span><span>142g protein</span><span>2.7L water</span></div>
+            </article>
+
+            <article class="widget-card" draggable="true" data-widget="mood">
+              <div class="widget-head">
+                <span class="widget-icon purple"></span>
+                <div><h3>Mood and sleep</h3><p>Calm / 7h 35m</p></div>
+                <div class="widget-actions">
+                  <button class="resize-widget" aria-label="Resize widget">Resize</button>
+                  <button class="remove-widget" aria-label="Remove widget">Remove</button>
+                </div>
+              </div>
+              <div class="mood-scale"><span></span><span></span><span class="active"></span><span></span><span></span></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="builder" aria-labelledby="builder-title">
+          <div class="section-heading page-heading">
+            <div>
+              <p class="eyebrow">System builder</p>
+              <h2 id="builder-title">Customize everything</h2>
+            </div>
+            <button class="primary-button" id="createTracker">Create tracker</button>
+          </div>
+
+          <section class="panel">
+            <div class="section-heading">
+              <h3>Widget library</h3>
+              <span class="pill">Drag-ready</span>
+            </div>
+            <div class="widget-library">
+              <button data-add-widget="habit">Habit Tracker</button>
+              <button data-add-widget="study">Study Tracker</button>
+              <button data-add-widget="workout">Workout Tracker</button>
+              <button data-add-widget="nutrition">Nutrition Tracker</button>
+              <button data-add-widget="calendar">Calendar</button>
+              <button data-add-widget="todo">To-Do List</button>
+              <button data-add-widget="water">Water Intake</button>
+              <button data-add-widget="sleep">Sleep Tracker</button>
+              <button data-add-widget="mood">Mood Tracker</button>
+              <button data-add-widget="reading">Reading Tracker</button>
+              <button data-add-widget="finance">Finance Tracker</button>
+              <button data-add-widget="custom">Custom Tracker</button>
+            </div>
+          </section>
+
+          <section class="panel builder-panel">
+            <div class="section-heading">
+              <h3>Personalization</h3>
+              <span class="pill">Live</span>
+            </div>
+            <label>Tracker name <input id="trackerName" value="Hydration + focus" /></label>
+            <label>Category <input id="trackerCategory" value="Health" /></label>
+            <label>Goal unit <input id="trackerUnit" value="8 glasses" /></label>
+            <div class="swatches" aria-label="Theme colors">
+              <button class="swatch green selected" data-accent="#6fc98a" aria-label="Green theme"></button>
+              <button class="swatch blue" data-accent="#7bb3e0" aria-label="Blue theme"></button>
+              <button class="swatch amber" data-accent="#d4a44c" aria-label="Amber theme"></button>
+              <button class="swatch purple" data-accent="#9d86d4" aria-label="Purple theme"></button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading">
+              <h3>Layouts</h3>
+              <span class="pill">Mobile first</span>
+            </div>
+            <div class="layout-options">
+              <button class="selected" data-layout="balanced">Balanced</button>
+              <button data-layout="dense">Dense</button>
+              <button data-layout="focus">Focus</button>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="fitness" aria-labelledby="fitness-title">
+          <div class="section-heading page-heading">
+            <div>
+              <p class="eyebrow">Workout dashboard</p>
+              <h2 id="fitness-title">Strength system</h2>
+            </div>
+            <span class="pill">9 week streak</span>
+          </div>
+
+          <section class="panel hero-panel">
+            <div>
+              <p class="eyebrow">Today</p>
+              <h3>Push strength A</h3>
+              <p>Bench press, shoulder press, incline dumbbell press, dips, triceps.</p>
+            </div>
+            <button class="primary-button">Log workout</button>
+          </section>
+
+          <div class="two-col">
+            <section class="panel">
+              <div class="section-heading"><h3>Exercises</h3><span class="pill">PR ready</span></div>
+              <div class="log-list">
+                <div><strong>Bench press</strong><span>4 sets / 8 reps / 82.5 kg</span></div>
+                <div><strong>Incline DB press</strong><span>3 sets / 10 reps / 28 kg</span></div>
+                <div><strong>Cable fly</strong><span>3 sets / 14 reps / 18 kg</span></div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading"><h3>Muscle targets</h3><span class="pill">Weekly</span></div>
+              <div class="subject-list">
+                <div class="subject"><div><strong>Chest</strong><span>14 / 18 sets</span></div><div class="progress-track"><span style="width: 78%"></span></div></div>
+                <div class="subject"><div><strong>Back</strong><span>10 / 16 sets</span></div><div class="progress-track"><span style="width: 62%"></span></div></div>
+                <div class="subject"><div><strong>Legs</strong><span>8 / 14 sets</span></div><div class="progress-track"><span style="width: 57%"></span></div></div>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="section-heading"><h3>Strength trend</h3><span class="pill">6 months</span></div>
+            <div class="line-chart" aria-label="Strength progress chart">
+              <svg viewBox="0 0 320 120" role="img">
+                <path class="grid-line" d="M10 100H310M10 60H310M10 20H310"></path>
+                <path class="area" d="M10 94 C54 86, 65 68, 96 71 S143 76, 174 52 S238 36, 310 24 L310 120 L10 120Z"></path>
+                <path class="line" d="M10 94 C54 86, 65 68, 96 71 S143 76, 174 52 S238 36, 310 24"></path>
+              </svg>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="nutrition" aria-labelledby="nutrition-title">
+          <div class="section-heading page-heading">
+            <div>
+              <p class="eyebrow">Nutrition tracker</p>
+              <h2 id="nutrition-title">Fuel plan</h2>
+            </div>
+            <button class="primary-button">Log meal</button>
+          </div>
+
+          <section class="panel hero-panel">
+            <div>
+              <p class="eyebrow">Workout aligned</p>
+              <h3>Lean strength target</h3>
+              <p>Protein is 86% complete. Add 34g protein at dinner to support recovery.</p>
+            </div>
+            <div class="ring" style="--value: 86"><span>86%</span></div>
+          </section>
+
+          <div class="macro-grid">
+            <article class="metric"><p>Calories</p><strong>2,120</strong><div class="progress-track"><span style="width: 78%"></span></div></article>
+            <article class="metric"><p>Protein</p><strong>142g</strong><div class="progress-track"><span style="width: 86%"></span></div></article>
+            <article class="metric"><p>Carbs</p><strong>238g</strong><div class="progress-track"><span style="width: 69%"></span></div></article>
+            <article class="metric"><p>Fats</p><strong>64g</strong><div class="progress-track"><span style="width: 72%"></span></div></article>
+            <article class="metric"><p>Fiber</p><strong>29g</strong><div class="progress-track"><span style="width: 81%"></span></div></article>
+            <article class="metric"><p>Water</p><strong>2.7L</strong><div class="progress-track"><span style="width: 67%"></span></div></article>
+          </div>
+
+          <section class="panel">
+            <div class="section-heading"><h3>Meal plan</h3><span class="pill">Custom foods</span></div>
+            <div class="log-list">
+              <div><strong>Breakfast bowl</strong><span>620 kcal / oats, yogurt, berries, whey</span></div>
+              <div><strong>Training lunch</strong><span>740 kcal / rice, chicken, avocado</span></div>
+              <div><strong>Planned dinner</strong><span>680 kcal / salmon, potato, greens</span></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="planning" aria-labelledby="planning-title">
+          <div class="section-heading page-heading">
+            <div>
+              <p class="eyebrow">Calendar and planning</p>
+              <h2 id="planning-title">Smart schedule</h2>
+            </div>
+            <button class="secondary-button">Connect</button>
+          </div>
+
+          <section class="panel sync-panel">
+            <div><strong>Google Calendar</strong><span>Two-way sync active</span></div>
+            <label class="toggle"><input type="checkbox" checked /><span></span></label>
+            <div><strong>Apple Calendar</strong><span>Meals, workouts, tasks, and study blocks</span></div>
+            <label class="toggle"><input type="checkbox" checked /><span></span></label>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading"><h3>Smart suggestions</h3><span class="pill">AI scheduled</span></div>
+            <div class="timeline">
+              <div class="timeline-item now"><time>08:30</time><div><strong>Deep work block</strong><span>Best focus window based on history</span></div></div>
+              <div class="timeline-item"><time>17:10</time><div><strong>Push workout</strong><span>Placed after nutrition target is met</span></div></div>
+              <div class="timeline-item"><time>20:30</time><div><strong>Meal prep and review</strong><span>Creates tomorrow's nutrition tasks</span></div></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="coach" aria-labelledby="coach-title">
+          <div class="section-heading page-heading">
+            <div>
+              <p class="eyebrow">AI coach</p>
+              <h2 id="coach-title">Personal insights</h2>
+            </div>
+            <span class="pill">Adaptive</span>
+          </div>
+
+          <section class="panel coach-card">
+            <h3>Today's recommendation</h3>
+            <p>Your workout consistency is high, but sleep dips after late study sessions. Move revision earlier and keep dinner protein-heavy on training days.</p>
+            <div class="ai-actions">
+              <button class="primary-button">Generate workout plan</button>
+              <button class="secondary-button">Build study schedule</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading"><h3>Trends</h3><span class="pill">Daily / weekly / monthly / yearly</span></div>
+            <div class="insight-list">
+              <div><strong>Strength</strong><span>Bench volume up 14% over 6 weeks.</span></div>
+              <div><strong>Nutrition</strong><span>Protein adherence predicts better workout completion.</span></div>
+              <div><strong>Study</strong><span>Two 50-minute blocks beat four short sessions for retention.</span></div>
+              <div><strong>Consistency</strong><span>Your best streaks start with morning dashboard check-ins.</span></div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
