@@ -1,0 +1,1433 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Momentum OS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+    <style>
+/* ─── Design tokens ─────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+  --bg:        #0e1012;
+  --rail:      #14161a;
+  --card:      #1a1c21;
+  --raised:    #21242b;
+  --border:    rgba(255,255,255,.07);
+  --border-md: rgba(255,255,255,.13);
+  --text:      #dde0e8;
+  --muted:     #6a7282;
+  --faint:     #2e323c;
+  --green:     #5ec97d;
+  --blue:      #6aa8d8;
+  --amber:     #cc9e44;
+  --red:       #c05a5a;
+  --purple:    #957fd0;
+  --accent:    var(--green);
+  --accent-2:  var(--blue);
+  --warn:      var(--amber);
+  --danger:    var(--red);
+  --ink:       var(--text);
+  --line:      var(--border);
+  --surface:   var(--card);
+  --surface-2: var(--raised);
+  --page:      var(--bg);
+  --shadow:    0 24px 80px rgba(0,0,0,.42);
+  --radius:    8px;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Menlo', monospace;
+}
+
+.app-shell[data-theme="light"] {
+  color-scheme: light;
+  --bg:        #f2f4f7;
+  --rail:      #e9ecf0;
+  --card:      #ffffff;
+  --raised:    #eef0f4;
+  --border:    rgba(17,18,20,.08);
+  --border-md: rgba(17,18,20,.14);
+  --text:      #14161a;
+  --muted:     #627082;
+  --faint:     #c4c8d2;
+  --page:      var(--bg);
+  --ink:       var(--text);
+  --line:      var(--border);
+  --surface:   var(--card);
+  --surface-2: var(--raised);
+  --shadow:    0 24px 80px rgba(17,18,20,.12);
+}
+
+/* ─── Reset & base ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { min-height: 100%; background: var(--bg); }
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 400;
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, textarea { font: inherit; color: inherit; cursor: pointer; }
+input, textarea { cursor: text; }
+h1, h2, h3, h4, p { margin: 0; }
+a { color: inherit; }
+
+/* ─── Shell ─────────────────────────────────────────────── */
+.app-shell {
+  width: min(100%, 740px);
+  min-height: 100vh;
+  height: 100vh;
+  margin: 0 auto;
+  background: var(--page);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── Topbar ─────────────────────────────────────────────── */
+.topbar {
+  flex: 0 0 48px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  background: var(--rail);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+  flex-shrink: 0;
+}
+h1 { font-size: .94rem; font-weight: 600; letter-spacing: -.01em; }
+h2 { font-size: 1.42rem; font-weight: 500; line-height: 1.1; letter-spacing: -.02em; }
+h3 { font-size: .92rem; font-weight: 500; }
+.eyebrow {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.top-actions { display: flex; align-items: center; gap: 8px; }
+.save-indicator { color: var(--muted); font-family: var(--font-mono); font-size: .67rem; transition: color 200ms; }
+.save-indicator.saving { color: var(--accent); }
+
+.icon-btn {
+  width: 30px; height: 30px; border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  display: grid; place-items: center;
+  transition: border-color 160ms, background 160ms;
+  position: relative;
+}
+.icon-btn:hover { border-color: var(--border-md); }
+.icon-btn svg { width: 14px; height: 14px; stroke: var(--muted); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ─── Bottom nav ─────────────────────────────────────────── */
+.bottom-nav {
+  flex: 0 0 48px;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  background: var(--rail);
+  border-bottom: 1px solid var(--border);
+  padding: 0 6px;
+}
+.bottom-nav button {
+  min-height: 48px;
+  border: 0; border-radius: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 500;
+  transition: color 160ms, border-color 160ms;
+  display: flex; align-items: center; justify-content: center;
+}
+.bottom-nav button.active { color: var(--text); border-bottom-color: var(--accent); }
+
+/* ─── Main scroll area ───────────────────────────────────── */
+main { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px; scroll-behavior: smooth; }
+
+/* ─── Views ─────────────────────────────────────────────── */
+.view { display: none; }
+.view.active { display: block; animation: slide-in 240ms cubic-bezier(.25,.46,.45,.94) both; }
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .view.active { animation: none; }
+}
+
+/* ─── Reusable components ────────────────────────────────── */
+.panel {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 16px;
+}
+.panel:first-child { margin-top: 0; }
+
+.page-heading {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 20px; gap: 12px;
+}
+
+.section-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px; gap: 8px;
+}
+
+.pill {
+  padding: .3rem .6rem;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  border-radius: 6px;
+  color: var(--accent);
+  font-size: .71rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  min-height: 34px; padding: 0 14px;
+  background: var(--green); color: #0a1a10;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 600; font-size: .84rem;
+  transition: opacity 160ms, transform 100ms;
+  white-space: nowrap;
+}
+.btn-primary:hover { opacity: .9; }
+.btn-primary:active { transform: scale(.97); }
+.btn-secondary {
+  min-height: 34px; padding: 0 14px;
+  background: var(--surface-2); color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-weight: 500; font-size: .84rem;
+  transition: border-color 160ms;
+}
+.btn-secondary:hover { border-color: var(--border-md); }
+
+/* ─── Hero panel ─────────────────────────────────────────── */
+.hero-panel {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-panel::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at top right, rgba(94,201,125,.08) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-panel h2 {
+  font-family: var(--font-mono);
+  font-size: 3.4rem;
+  font-weight: 300;
+  color: var(--text);
+  margin: .2rem 0;
+  letter-spacing: -.04em;
+}
+.hero-panel p { color: var(--muted); font-size: .84rem; line-height: 1.55; max-width: 28ch; }
+
+/* ─── Ring ───────────────────────────────────────────────── */
+.ring {
+  --size: 5.4rem;
+  width: var(--size); aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle, var(--surface-2) 56%, transparent 58%),
+    conic-gradient(var(--accent) calc(var(--value) * 1%), rgba(255,255,255,.1) 0);
+  box-shadow: inset 0 0 0 1px var(--line);
+  flex-shrink: 0;
+}
+.ring span { font-family: var(--font-mono); font-size: .82rem; font-weight: 500; color: var(--accent); }
+
+/* ─── Progress ───────────────────────────────────────────── */
+.progress-row { display: flex; align-items: center; gap: 10px; }
+.progress-track {
+  flex: 1; height: 7px; border-radius: 4px;
+  background: var(--faint); overflow: hidden;
+}
+.progress-track span {
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--green);
+  transition: width 600ms cubic-bezier(.2,.9,.2,1);
+}
+.progress-pct { font-family: var(--font-mono); font-size: .8rem; color: var(--accent); font-weight: 500; min-width: 2.6rem; text-align: right; }
+
+/* ─── Widget grid ─────────────────────────────────────────── */
+.widget-toolbar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.widget-toolbar .btn-secondary { font-size: .78rem; padding: 0 8px; min-height: 30px; }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+  position: relative;
+}
+.dashboard-grid.dense-layout { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.dashboard-grid.focus-layout { grid-template-columns: 1fr; }
+.dashboard-grid.focus-layout .widget-card { grid-column: 1; }
+
+/* drop indicator */
+.drop-indicator {
+  position: absolute; left: 0; right: 0;
+  height: 2px; background: var(--accent);
+  border-radius: 2px; pointer-events: none;
+  opacity: 0; transition: opacity 120ms;
+}
+.drop-indicator.visible { opacity: 1; }
+
+.widget-card {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px;
+  min-height: 148px;
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  transition: opacity 180ms, transform 160ms, border-color 160ms, box-shadow 160ms;
+  cursor: grab;
+}
+.widget-card:hover { border-color: var(--border-md); }
+.widget-card.large { grid-column: 1 / -1; }
+.widget-card.dragging { opacity: .42; transform: scale(.97); box-shadow: 0 8px 32px rgba(0,0,0,.3); cursor: grabbing; }
+
+.widget-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+.widget-dot {
+  width: 16px; height: 16px; border-radius: 5px; flex-shrink: 0; margin-top: 2px;
+}
+.widget-dot.green { background: var(--green); }
+.widget-dot.blue  { background: var(--blue); }
+.widget-dot.amber { background: var(--amber); }
+.widget-dot.purple { background: var(--purple); }
+
+.widget-head h3 { font-size: .88rem; font-weight: 500; }
+.widget-head p { color: var(--muted); font-size: .76rem; margin-top: 2px; }
+
+.widget-acts { display: flex; gap: 5px; }
+.widget-acts button {
+  width: 22px; height: 22px; border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--raised);
+  overflow: hidden; text-indent: -999px;
+  position: relative;
+  transition: border-color 160ms;
+}
+.widget-acts button:hover { border-color: var(--border-md); }
+.resize-btn::after {
+  content: ''; position: absolute;
+  right: 5px; bottom: 5px;
+  width: 7px; height: 7px;
+  border: 1.5px solid var(--muted);
+  border-top: 0; border-left: 0;
+}
+.remove-btn::after {
+  content: ''; position: absolute;
+  left: 6px; top: 10px;
+  width: 10px; height: 1.5px;
+  background: var(--red);
+}
+
+/* macro row */
+.macro-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  font-family: var(--font-mono); font-size: .73rem; color: var(--muted);
+}
+.macro-row span { background: var(--raised); border-radius: 4px; padding: .2rem .4rem; }
+
+/* mood scale */
+.mood-scale {
+  display: grid; grid-template-columns: repeat(5,1fr);
+  gap: 6px; align-items: end; height: 50px;
+}
+.mood-scale span { border-radius: 4px; background: var(--faint); transition: background 200ms; }
+.mood-scale span.active { background: var(--accent); }
+.mood-scale span:nth-child(1) { height: 20%; }
+.mood-scale span:nth-child(2) { height: 44%; }
+.mood-scale span:nth-child(3) { height: 80%; }
+.mood-scale span:nth-child(4) { height: 56%; }
+.mood-scale span:nth-child(5) { height: 30%; }
+
+/* bar chart */
+.bar-chart {
+  height: 70px;
+  display: grid; grid-template-columns: repeat(5,1fr);
+  align-items: end; gap: 5px;
+}
+.bar-chart span {
+  height: var(--h); min-height: 6px;
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(180deg, var(--green), rgba(94,201,125,.2));
+  animation: grow 600ms cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes grow { from { height: 4px; } }
+@media (prefers-reduced-motion: reduce) { .bar-chart span { animation: none; } }
+
+/* ─── Builder ─────────────────────────────────────────────── */
+.widget-library {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 8px;
+}
+.widget-library button {
+  min-height: 36px; padding: 0 10px;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--raised);
+  font-size: .82rem;
+  transition: border-color 160ms, background 160ms;
+}
+.widget-library button:hover { border-color: var(--border-md); background: var(--surface-2); }
+
+.builder-form { display: grid; gap: 12px; }
+.builder-form label { display: grid; gap: 5px; color: var(--muted); font-size: .74rem; }
+.builder-form input {
+  min-height: 36px; padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--raised);
+  transition: border-color 160ms;
+}
+.builder-form input:focus { outline: none; border-color: var(--accent); }
+
+.swatches { display: flex; gap: 8px; padding: 4px 0; }
+.swatch {
+  width: 32px; height: 32px; border-radius: var(--radius);
+  border: 2px solid transparent;
+  cursor: pointer; transition: transform 120ms;
+}
+.swatch:hover { transform: scale(1.08); }
+.swatch.selected { box-shadow: 0 0 0 2px var(--text); }
+.swatch.green  { background: var(--green); }
+.swatch.blue   { background: var(--blue); }
+.swatch.amber  { background: var(--amber); }
+.swatch.purple { background: var(--purple); }
+
+.layout-opts { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.layout-opts button {
+  min-height: 36px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--raised);
+  font-size: .82rem; transition: border-color 160ms, background 160ms;
+}
+.layout-opts button.selected { background: var(--accent); color: #0a1a10; border-color: var(--accent); font-weight: 600; }
+
+/* ─── Fitness ─────────────────────────────────────────────── */
+.log-list { display: grid; gap: 8px; }
+.log-item {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--raised);
+  display: grid; gap: 2px;
+}
+.log-item strong { font-size: .88rem; }
+.log-item span   { color: var(--muted); font-size: .76rem; }
+
+.subject-list { display: grid; gap: 10px; }
+.subject-item { display: grid; gap: 7px; padding: 10px 12px; border-radius: var(--radius); background: var(--raised); }
+.subject-item-top { display: flex; justify-content: space-between; }
+.subject-item-top strong { font-size: .86rem; }
+.subject-item-top span   { color: var(--muted); font-size: .76rem; }
+
+.line-chart { height: 9rem; }
+.line-chart svg { width: 100%; height: 100%; }
+.chart-grid { stroke: var(--line); stroke-width: 1; }
+.chart-area { fill: rgba(94,201,125,.13); }
+.chart-line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Pomodoro timer */
+.timer-face {
+  display: grid; place-items: center;
+  padding: 8px 0;
+}
+#timerDisplay {
+  font-family: var(--font-mono);
+  font-size: 2.6rem;
+  font-weight: 300;
+  letter-spacing: -.02em;
+  color: var(--text);
+  transition: color 300ms;
+}
+#timerDisplay.active-timer { color: var(--accent); }
+.timer-modes {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 6px; margin-bottom: 12px;
+}
+.timer-modes button {
+  min-height: 32px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--raised);
+  font-size: .78rem; color: var(--muted);
+  transition: background 160ms, color 160ms;
+}
+.timer-modes button.selected { background: var(--accent); color: #0a1a10; border-color: var(--accent); font-weight: 600; }
+.timer-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.timer-ring {
+  position: relative; width: 120px; height: 120px; margin: 0 auto 10px;
+}
+.timer-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.timer-ring-track { fill: none; stroke: var(--faint); stroke-width: 5; }
+.timer-ring-fill  { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-ring-label { position: absolute; inset: 0; display: grid; place-items: center; }
+.timer-ring-label span { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 400; }
+
+/* ─── Nutrition ───────────────────────────────────────────── */
+.macro-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.metric-card {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: grid; gap: 6px;
+}
+.metric-card p { color: var(--muted); font-size: .74rem; }
+.metric-card strong { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 400; display: block; }
+
+.meal-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 12px; }
+.meal-form input {
+  min-height: 34px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--raised); font-size: .84rem;
+}
+.meal-form input:focus { outline: none; border-color: var(--accent); }
+
+/* ─── Planning ────────────────────────────────────────────── */
+.sync-grid {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 10px; align-items: center;
+}
+.sync-row { display: grid; gap: 2px; }
+.sync-row strong { font-size: .88rem; }
+.sync-row span   { color: var(--muted); font-size: .76rem; }
+
+.toggle-wrap { display: flex; align-items: center; gap: 6px; }
+.toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.toggle input { position: absolute; opacity: 0; }
+.toggle-track {
+  position: absolute; inset: 0;
+  border-radius: 11px; background: var(--faint);
+  transition: background 200ms; cursor: pointer;
+}
+.toggle input:checked ~ .toggle-track { background: var(--accent); }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: transform 200ms;
+  pointer-events: none;
+}
+.toggle input:checked ~ .toggle-track ~ .toggle-thumb { transform: translateX(18px); }
+
+.timeline { display: grid; gap: 10px; }
+.timeline-item {
+  display: grid; grid-template-columns: 3.2rem 1fr;
+  gap: 10px; align-items: start;
+}
+.timeline-item time {
+  font-family: var(--font-mono); font-size: .72rem;
+  color: var(--muted); font-weight: 500; padding-top: 1px;
+}
+.timeline-item.now time { color: var(--accent); }
+.timeline-body {
+  padding-left: 10px;
+  border-left: 2px solid var(--faint);
+  display: grid; gap: 2px;
+}
+.timeline-item.now .timeline-body { border-left-color: var(--accent); }
+.timeline-body strong { font-size: .88rem; }
+.timeline-body span   { color: var(--muted); font-size: .76rem; }
+
+/* ─── AI Coach ────────────────────────────────────────────── */
+.chat-container {
+  display: flex; flex-direction: column;
+  gap: 10px;
+  min-height: 280px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow-y: auto;
+  max-height: 380px;
+}
+.chat-msg {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: .84rem; line-height: 1.6;
+  max-width: 88%;
+  animation: msg-in 200ms ease both;
+}
+@keyframes msg-in { from { opacity: 0; transform: translateY(4px); } }
+.chat-msg.user {
+  background: var(--raised); border: 1px solid var(--border);
+  align-self: flex-end; color: var(--text);
+}
+.chat-msg.ai {
+  background: rgba(94,201,125,.08);
+  border: 1px solid rgba(94,201,125,.18);
+  align-self: flex-start; color: var(--text);
+}
+.chat-msg.ai strong { color: var(--accent); }
+.chat-msg.typing { opacity: .6; font-style: italic; }
+
+.chat-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 12px; }
+.chat-form input {
+  min-height: 38px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--raised); font-size: .84rem;
+  transition: border-color 160ms;
+}
+.chat-form input:focus { outline: none; border-color: var(--accent); }
+
+.insight-list { display: grid; gap: 8px; }
+.insight-item {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--raised);
+  display: grid; gap: 2px;
+}
+.insight-item strong { font-size: .86rem; }
+.insight-item span   { color: var(--muted); font-size: .76rem; }
+
+/* quick-action chips */
+.quick-prompts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.quick-prompts button {
+  padding: .3rem .7rem;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: var(--raised); font-size: .76rem;
+  color: var(--muted); transition: border-color 160ms, color 160ms;
+}
+.quick-prompts button:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── Misc ───────────────────────────────────────────────── */
+.two-col { display: grid; gap: 16px; }
+
+.check-btn {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  flex-shrink: 0; position: relative;
+  transition: background 180ms, border-color 180ms;
+}
+.check-btn.done { background: var(--accent); border-color: var(--accent); }
+.check-btn.done::after {
+  content: '';
+  position: absolute; left: 8px; top: 5px;
+  width: 6px; height: 11px;
+  border: solid #0a1a10; border-width: 0 1.8px 1.8px 0;
+  transform: rotate(45deg);
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (min-width: 760px) {
+  body { padding: 2rem 0; }
+  .app-shell {
+    min-height: calc(100vh - 4rem);
+    height: calc(100vh - 4rem);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .topbar { border-radius: 18px 18px 0 0; }
+  .two-col { grid-template-columns: 1fr 1fr; }
+  .macro-grid { grid-template-columns: repeat(3,1fr); }
+  .widget-library { grid-template-columns: repeat(3,1fr); }
+  .dashboard-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .dashboard-grid .widget-card.large { grid-column: span 2; }
+  .chat-form input { font-size: .88rem; }
+}
+
+@media (max-width: 420px) {
+  main { padding: 14px; }
+  .topbar { padding: 0 14px; }
+  h2 { font-size: 1.25rem; }
+  .widget-toolbar { grid-template-columns: repeat(2,1fr); }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .widget-card.large { grid-column: 1; }
+  .macro-grid { grid-template-columns: 1fr 1fr; }
+}
+    </style>
+  </head>
+  <body>
+    <div class="app-shell" data-theme="dark">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="brand-mark"></div>
+          <h1>Momentum OS</h1>
+        </div>
+        <div class="top-actions">
+          <span class="save-indicator" id="saveState">Saved</span>
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Nav -->
+      <nav class="bottom-nav" aria-label="Primary navigation">
+        <button class="active" data-target="dashboard">Dashboard</button>
+        <button data-target="builder">Builder</button>
+        <button data-target="fitness">Fitness</button>
+        <button data-target="nutrition">Nutrition</button>
+        <button data-target="planning">Plan</button>
+        <button data-target="coach">AI Coach</button>
+      </nav>
+
+      <main id="mainScroll">
+
+        <!-- ── DASHBOARD ── -->
+        <section class="view active" id="dashboard">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Personal command center</p>
+              <h2>Build your day</h2>
+            </div>
+            <button class="btn-primary" data-jump="builder">Customize</button>
+          </div>
+
+          <section class="hero-panel">
+            <div>
+              <p class="eyebrow">Life score</p>
+              <h2 id="lifeScore">82</h2>
+              <p>Balanced across fitness, nutrition, habits, and recovery. On track for a great week.</p>
+            </div>
+            <div class="ring" style="--value:82"><span>82%</span></div>
+          </section>
+
+          <div class="widget-toolbar">
+            <button class="btn-secondary" data-add-widget="tracker">+ Tracker</button>
+            <button class="btn-secondary" data-add-widget="workout">+ Workout</button>
+            <button class="btn-secondary" data-add-widget="nutrition">+ Nutrition</button>
+            <button class="btn-secondary" data-add-widget="finance">+ Finance</button>
+          </div>
+
+          <div class="dashboard-grid" id="dashboardGrid">
+            <div class="drop-indicator" id="dropIndicator"></div>
+
+            <article class="widget-card large" draggable="true" data-widget="study">
+              <div class="widget-head">
+                <span class="widget-dot blue"></span>
+                <div><h3>Study tracker</h3><p>Custom goal · 18 day streak</p></div>
+                <div class="widget-acts">
+                  <button class="resize-btn" aria-label="Resize">Resize</button>
+                  <button class="remove-btn" aria-label="Remove">Remove</button>
+                </div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-track"><span style="width:76%"></span></div>
+                <span class="progress-pct">76%</span>
+              </div>
+              <div class="bar-chart">
+                <span style="--h:48%"></span><span style="--h:80%"></span>
+                <span style="--h:64%"></span><span style="--h:92%"></span>
+                <span style="--h:68%"></span>
+              </div>
+            </article>
+
+            <article class="widget-card" draggable="true" data-widget="workout">
+              <div class="widget-head">
+                <span class="widget-dot green"></span>
+                <div><h3>Workout plan</h3><p>Upper body · PR week</p></div>
+                <div class="widget-acts">
+                  <button class="resize-btn" aria-label="Resize">Resize</button>
+                  <button class="remove-btn" aria-label="Remove">Remove</button>
+                </div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-track"><span style="width:63%"></span></div>
+                <span class="progress-pct">63%</span>
+              </div>
+            </article>
+
+            <article class="widget-card" draggable="true" data-widget="nutrition">
+              <div class="widget-head">
+                <span class="widget-dot amber"></span>
+                <div><h3>Nutrition</h3><p>Protein on target</p></div>
+                <div class="widget-acts">
+                  <button class="resize-btn" aria-label="Resize">Resize</button>
+                  <button class="remove-btn" aria-label="Remove">Remove</button>
+                </div>
+              </div>
+              <div class="macro-row">
+                <span>2,120 kcal</span><span>142g protein</span><span>2.7L water</span>
+              </div>
+            </article>
+
+            <article class="widget-card" draggable="true" data-widget="mood">
+              <div class="widget-head">
+                <span class="widget-dot purple"></span>
+                <div><h3>Mood &amp; sleep</h3><p>Calm · 7h 35m</p></div>
+                <div class="widget-acts">
+                  <button class="resize-btn" aria-label="Resize">Resize</button>
+                  <button class="remove-btn" aria-label="Remove">Remove</button>
+                </div>
+              </div>
+              <div class="mood-scale">
+                <span></span><span></span><span class="active"></span><span></span><span></span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ── BUILDER ── -->
+        <section class="view" id="builder">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">System builder</p>
+              <h2>Customize everything</h2>
+            </div>
+            <button class="btn-primary" id="createTracker">Create tracker</button>
+          </div>
+
+          <section class="panel">
+            <div class="section-head"><h3>Widget library</h3><span class="pill">Drag-ready</span></div>
+            <div class="widget-library">
+              <button data-add-widget="habit">Habit Tracker</button>
+              <button data-add-widget="study">Study Tracker</button>
+              <button data-add-widget="workout">Workout Tracker</button>
+              <button data-add-widget="nutrition">Nutrition Tracker</button>
+              <button data-add-widget="calendar">Calendar</button>
+              <button data-add-widget="todo">To-Do List</button>
+              <button data-add-widget="water">Water Intake</button>
+              <button data-add-widget="sleep">Sleep Tracker</button>
+              <button data-add-widget="mood">Mood Tracker</button>
+              <button data-add-widget="reading">Reading Tracker</button>
+              <button data-add-widget="finance">Finance Tracker</button>
+              <button data-add-widget="custom">Custom Tracker</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head"><h3>Create custom tracker</h3><span class="pill">Live</span></div>
+            <div class="builder-form">
+              <label>Tracker name<input id="trackerName" value="Hydration + focus" /></label>
+              <label>Category<input id="trackerCategory" value="Health" /></label>
+              <label>Goal unit<input id="trackerUnit" value="8 glasses" /></label>
+              <div>
+                <p class="eyebrow" style="margin-bottom:8px">Theme color</p>
+                <div class="swatches">
+                  <button class="swatch green selected" data-accent="#5ec97d" aria-label="Green"></button>
+                  <button class="swatch blue"   data-accent="#6aa8d8" aria-label="Blue"></button>
+                  <button class="swatch amber"  data-accent="#cc9e44" aria-label="Amber"></button>
+                  <button class="swatch purple" data-accent="#957fd0" aria-label="Purple"></button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head"><h3>Layout</h3><span class="pill">Mobile first</span></div>
+            <div class="layout-opts">
+              <button class="selected" data-layout="balanced">Balanced</button>
+              <button data-layout="dense">Dense</button>
+              <button data-layout="focus">Focus</button>
+            </div>
+          </section>
+        </section>
+
+        <!-- ── FITNESS ── -->
+        <section class="view" id="fitness">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Workout dashboard</p>
+              <h2>Strength system</h2>
+            </div>
+            <span class="pill">9 week streak</span>
+          </div>
+
+          <section class="hero-panel">
+            <div>
+              <p class="eyebrow">Today — Push A</p>
+              <h3 style="font-size:1.1rem;font-weight:500;margin:.4rem 0 .5rem">Bench · OHP · Incline · Dips · Triceps</h3>
+              <p>4 exercises · est. 65 min · PR target on bench</p>
+            </div>
+            <button class="btn-primary" id="logWorkout">Log set</button>
+          </section>
+
+          <div class="two-col">
+            <section class="panel">
+              <div class="section-head"><h3>Exercises</h3><span class="pill">PR ready</span></div>
+              <div class="log-list">
+                <div class="log-item"><strong>Bench press</strong><span>4 × 8 · 82.5 kg</span></div>
+                <div class="log-item"><strong>OHP</strong><span>3 × 8 · 55 kg</span></div>
+                <div class="log-item"><strong>Incline DB press</strong><span>3 × 10 · 28 kg</span></div>
+                <div class="log-item"><strong>Cable fly</strong><span>3 × 14 · 18 kg</span></div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="section-head"><h3>Volume targets</h3><span class="pill">Weekly</span></div>
+              <div class="subject-list">
+                <div class="subject-item">
+                  <div class="subject-item-top"><strong>Chest</strong><span>14 / 18 sets</span></div>
+                  <div class="progress-track"><span style="width:78%"></span></div>
+                </div>
+                <div class="subject-item">
+                  <div class="subject-item-top"><strong>Back</strong><span>10 / 16 sets</span></div>
+                  <div class="progress-track"><span style="width:62%"></span></div>
+                </div>
+                <div class="subject-item">
+                  <div class="subject-item-top"><strong>Legs</strong><span>8 / 14 sets</span></div>
+                  <div class="progress-track"><span style="width:57%"></span></div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Pomodoro timer -->
+          <section class="panel">
+            <div class="section-head"><h3>Focus timer</h3><span class="pill">Pomodoro</span></div>
+            <div class="timer-modes">
+              <button class="selected" data-mins="25">Work · 25m</button>
+              <button data-mins="5">Break · 5m</button>
+              <button data-mins="15">Long · 15m</button>
+            </div>
+            <div class="timer-ring">
+              <svg viewBox="0 0 120 120">
+                <circle class="timer-ring-track" cx="60" cy="60" r="52"/>
+                <circle class="timer-ring-fill" id="timerArc" cx="60" cy="60" r="52"
+                  stroke-dasharray="326.7" stroke-dashoffset="0"/>
+              </svg>
+              <div class="timer-ring-label"><span id="timerDisplay">25:00</span></div>
+            </div>
+            <div class="timer-btns">
+              <button class="btn-primary" id="timerStart">Start</button>
+              <button class="btn-secondary" id="timerReset">Reset</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head"><h3>Strength trend</h3><span class="pill">6 months</span></div>
+            <div class="line-chart">
+              <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+                <path class="chart-grid" d="M10 80H310M10 50H310M10 20H310"/>
+                <path class="chart-area" d="M10 76 C54 68,65 52,96 55 S143 60,174 40 S238 26,310 14 L310 100 L10 100Z"/>
+                <path class="chart-line" d="M10 76 C54 68,65 52,96 55 S143 60,174 40 S238 26,310 14"/>
+              </svg>
+            </div>
+          </section>
+        </section>
+
+        <!-- ── NUTRITION ── -->
+        <section class="view" id="nutrition">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Daily fuel</p>
+              <h2>Nutrition tracker</h2>
+            </div>
+            <button class="btn-primary" id="logMealBtn">Log meal</button>
+          </div>
+
+          <section class="hero-panel">
+            <div>
+              <p class="eyebrow">Workout aligned</p>
+              <h3 style="font-size:1rem;font-weight:500;margin:.3rem 0 .4rem">Lean strength target</h3>
+              <p>Protein <strong id="proteinPct" style="color:var(--accent)">86%</strong> complete. Add ~34g protein at dinner.</p>
+            </div>
+            <div class="ring" id="nutritionRing" style="--value:86"><span id="nutritionRingVal">86%</span></div>
+          </section>
+
+          <div class="macro-grid">
+            <div class="metric-card"><p>Calories</p><strong id="metCal">2,120</strong><div class="progress-track" style="margin-top:6px"><span id="metCalBar" style="width:78%"></span></div></div>
+            <div class="metric-card"><p>Protein</p><strong id="metPro">142g</strong><div class="progress-track" style="margin-top:6px"><span id="metProBar" style="width:86%"></span></div></div>
+            <div class="metric-card"><p>Carbs</p><strong id="metCarb">238g</strong><div class="progress-track" style="margin-top:6px"><span id="metCarbBar" style="width:69%"></span></div></div>
+            <div class="metric-card"><p>Fats</p><strong id="metFat">64g</strong><div class="progress-track" style="margin-top:6px"><span id="metFatBar" style="width:72%"></span></div></div>
+            <div class="metric-card"><p>Fiber</p><strong>29g</strong><div class="progress-track" style="margin-top:6px"><span style="width:81%"></span></div></div>
+            <div class="metric-card"><p>Water</p><strong>2.7L</strong><div class="progress-track" style="margin-top:6px"><span style="width:67%"></span></div></div>
+          </div>
+
+          <section class="panel">
+            <div class="section-head"><h3>Today's meals</h3><span class="pill">Custom foods</span></div>
+            <div class="log-list" id="mealLog">
+              <div class="log-item"><strong>Breakfast bowl</strong><span>620 kcal · oats, yogurt, berries, whey</span></div>
+              <div class="log-item"><strong>Training lunch</strong><span>740 kcal · rice, chicken, avocado</span></div>
+              <div class="log-item"><strong>Planned dinner</strong><span>680 kcal · salmon, potato, greens</span></div>
+            </div>
+            <div class="meal-form" id="mealFormArea" style="display:none">
+              <input id="mealInput" placeholder="e.g. Protein shake · 35g protein · 180 kcal" />
+              <button class="btn-primary" id="addMealConfirm">Add</button>
+            </div>
+          </section>
+        </section>
+
+        <!-- ── PLANNING ── -->
+        <section class="view" id="planning">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Calendar &amp; planning</p>
+              <h2>Smart schedule</h2>
+            </div>
+            <button class="btn-secondary">Connect</button>
+          </div>
+
+          <section class="panel">
+            <div class="section-head"><h3>Calendar sync</h3><span class="pill">Live</span></div>
+            <div class="sync-grid">
+              <div class="sync-row"><strong>Google Calendar</strong><span>Two-way sync active</span></div>
+              <label class="toggle">
+                <input type="checkbox" checked />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+              <div class="sync-row"><strong>Apple Health</strong><span>Workouts, sleep, and steps</span></div>
+              <label class="toggle">
+                <input type="checkbox" checked />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+              <div class="sync-row"><strong>Notion</strong><span>Tasks and study blocks</span></div>
+              <label class="toggle">
+                <input type="checkbox" />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head"><h3>Today's schedule</h3><span class="pill">AI scheduled</span></div>
+            <div class="timeline">
+              <div class="timeline-item now">
+                <time>08:30</time>
+                <div class="timeline-body"><strong>Deep work block</strong><span>Best focus window based on history</span></div>
+              </div>
+              <div class="timeline-item">
+                <time>12:00</time>
+                <div class="timeline-body"><strong>Training lunch</strong><span>Rice, chicken, avocado · 740 kcal</span></div>
+              </div>
+              <div class="timeline-item">
+                <time>17:10</time>
+                <div class="timeline-body"><strong>Push workout A</strong><span>Placed after nutrition target is met</span></div>
+              </div>
+              <div class="timeline-item">
+                <time>20:30</time>
+                <div class="timeline-body"><strong>Meal prep &amp; review</strong><span>Creates tomorrow's nutrition tasks</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head"><h3>Upcoming</h3></div>
+            <div class="log-list">
+              <div class="log-item"><strong>Leg day · Friday</strong><span>Squat, RDL, leg press, calf raises</span></div>
+              <div class="log-item"><strong>Weekly review · Sunday</strong><span>Metrics, habit streaks, goal adjustment</span></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ── AI COACH ── -->
+        <section class="view" id="coach">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Powered by Claude</p>
+              <h2>AI Coach</h2>
+            </div>
+            <span class="pill">Adaptive</span>
+          </div>
+
+          <div class="quick-prompts">
+            <button class="quick-chip">Optimize my workout split</button>
+            <button class="quick-chip">Improve my protein intake</button>
+            <button class="quick-chip">Build a study schedule</button>
+            <button class="quick-chip">Why am I feeling tired?</button>
+          </div>
+
+          <div class="chat-container" id="chatContainer">
+            <div class="chat-msg ai">
+              <strong>Coach</strong><br>
+              Hi! I'm your AI coach. I can see your fitness, nutrition, and habit data. Ask me anything — workout plans, meal timing, recovery tips, or how to push past a plateau.
+            </div>
+          </div>
+
+          <div class="chat-form">
+            <input id="chatInput" placeholder="Ask your coach…" autocomplete="off" />
+            <button class="btn-primary" id="chatSend">Send</button>
+          </div>
+
+          <section class="panel" style="margin-top:16px">
+            <div class="section-head"><h3>Weekly insights</h3><span class="pill">Auto-generated</span></div>
+            <div class="insight-list">
+              <div class="insight-item"><strong>Strength</strong><span>Bench press volume up 14% over 6 weeks. Ready for a new PR attempt.</span></div>
+              <div class="insight-item"><strong>Nutrition</strong><span>Protein adherence correlates with better workout completion — keep it up.</span></div>
+              <div class="insight-item"><strong>Study</strong><span>Two 50-min deep work blocks beat four short sessions for long-term retention.</span></div>
+              <div class="insight-item"><strong>Recovery</strong><span>Sleep dips after late study sessions. Move revision earlier on training days.</span></div>
+            </div>
+          </section>
+        </section>
+
+      </main>
+    </div><!-- end app-shell -->
+
+    <script>
+// ─── State & config ──────────────────────────────────────
+const shell      = document.querySelector('.app-shell');
+const mainScroll = document.getElementById('mainScroll');
+const saveEl     = document.getElementById('saveState');
+
+const widgetPresets = {
+  habit:     ['Habit Tracker',    'Daily routine · streaks',        68, 'green'],
+  study:     ['Study Tracker',    'Subjects · sessions · goals',    76, 'blue'],
+  workout:   ['Workout Tracker',  'Plans · sets · PRs',             63, 'green'],
+  nutrition: ['Nutrition Tracker','Calories · macros · water',      86, 'amber'],
+  calendar:  ['Calendar',         'Tasks · meals · sessions',       58, 'blue'],
+  todo:      ['To-Do List',       'Projects · subtasks · deadlines',72, 'purple'],
+  water:     ['Water Intake',     'Hydration · reminders',          67, 'blue'],
+  sleep:     ['Sleep Tracker',    'Recovery · bedtime · quality',   74, 'purple'],
+  mood:      ['Mood Tracker',     'Energy · stress · notes',        61, 'purple'],
+  reading:   ['Reading Tracker',  'Books · pages · notes',          54, 'amber'],
+  finance:   ['Finance Tracker',  'Budget · savings · spend',       71, 'green'],
+  tracker:   ['Custom Tracker',   'Anything you want to measure',   50, 'purple'],
+  custom:    ['Custom Tracker',   'Anything you want to measure',   50, 'purple'],
+};
+
+// Restore theme / accent
+const savedTheme  = localStorage.getItem('mo-theme');
+const savedAccent = localStorage.getItem('mo-accent');
+if (savedTheme)  shell.dataset.theme = savedTheme;
+if (savedAccent) shell.style.setProperty('--accent', savedAccent);
+
+// ─── Saved indicator ─────────────────────────────────────
+let saveTimer;
+function showSaved(msg = 'Saved') {
+  saveEl.textContent = msg;
+  saveEl.classList.add('saving');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveEl.textContent = 'Saved';
+    saveEl.classList.remove('saving');
+  }, 1200);
+}
+
+// ─── Navigation ───────────────────────────────────────────
+function activateView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === id));
+  document.querySelectorAll('.bottom-nav button').forEach(b =>
+    b.classList.toggle('active', b.dataset.target === id));
+  mainScroll.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.bottom-nav button').forEach(b =>
+  b.addEventListener('click', () => activateView(b.dataset.target)));
+
+document.querySelectorAll('[data-jump]').forEach(b =>
+  b.addEventListener('click', () => activateView(b.dataset.jump)));
+
+// ─── Theme toggle ─────────────────────────────────────────
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const next = shell.dataset.theme === 'dark' ? 'light' : 'dark';
+  shell.dataset.theme = next;
+  localStorage.setItem('mo-theme', next);
+  showSaved('Theme saved');
+});
+
+// ─── Accent swatches ──────────────────────────────────────
+document.querySelectorAll('.swatch').forEach(s => {
+  s.addEventListener('click', () => {
+    document.querySelectorAll('.swatch').forEach(x => x.classList.remove('selected'));
+    s.classList.add('selected');
+    shell.style.setProperty('--accent', s.dataset.accent);
+    localStorage.setItem('mo-accent', s.dataset.accent);
+    showSaved('Color saved');
+  });
+});
+
+// ─── Layout options ───────────────────────────────────────
+const grid = document.getElementById('dashboardGrid');
+document.querySelectorAll('.layout-opts button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.layout-opts button').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+    grid.classList.remove('dense-layout', 'focus-layout');
+    if (b.dataset.layout === 'dense')  grid.classList.add('dense-layout');
+    if (b.dataset.layout === 'focus')  grid.classList.add('focus-layout');
+    showSaved('Layout saved');
+  });
+});
+
+// ─── Widget system ────────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function addWidget(type, override = {}) {
+  const preset = widgetPresets[type] || widgetPresets.custom;
+  const title    = override.title    || preset[0];
+  const subtitle = override.subtitle || preset[1];
+  const pct      = override.progress || preset[2];
+  const color    = preset[3];
+
+  const w = document.createElement('article');
+  w.className   = 'widget-card';
+  w.draggable   = true;
+  w.dataset.widget = type;
+  w.innerHTML = `
+    <div class="widget-head">
+      <span class="widget-dot ${color}"></span>
+      <div><h3>${escHtml(title)}</h3><p>${escHtml(subtitle)}</p></div>
+      <div class="widget-acts">
+        <button class="resize-btn" aria-label="Resize">Resize</button>
+        <button class="remove-btn" aria-label="Remove">Remove</button>
+      </div>
+    </div>
+    <div class="progress-row">
+      <div class="progress-track"><span style="width:${pct}%"></span></div>
+      <span class="progress-pct">${pct}%</span>
+    </div>
+    <div class="macro-row"><span>Milestone active</span><span>Streak on</span><span>Daily insights</span></div>
+  `;
+  grid.appendChild(w);
+  bindWidget(w);
+  showSaved('Widget added');
+}
+
+function bindWidget(w) {
+  w.querySelector('.remove-btn')?.addEventListener('click', () => { w.remove(); showSaved('Widget removed'); });
+  w.querySelector('.resize-btn')?.addEventListener('click', () => { w.classList.toggle('large'); showSaved('Size saved'); });
+  w.addEventListener('dragstart', e => {
+    dragState.el = w; w.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  w.addEventListener('dragend', () => {
+    w.classList.remove('dragging'); dragState.el = null;
+    dropInd.classList.remove('visible');
+    showSaved('Order saved');
+  });
+}
+
+grid.querySelectorAll('.widget-card').forEach(bindWidget);
+
+// Widget add buttons (toolbar + library)
+document.querySelectorAll('[data-add-widget]').forEach(b =>
+  b.addEventListener('click', () => { addWidget(b.dataset.addWidget); activateView('dashboard'); }));
+
+// Create tracker button
+document.getElementById('createTracker').addEventListener('click', () => {
+  const title    = document.getElementById('trackerName').value.trim()    || 'Custom tracker';
+  const category = document.getElementById('trackerCategory').value.trim() || 'Personal';
+  const unit     = document.getElementById('trackerUnit').value.trim()     || '100%';
+  addWidget('custom', { title, subtitle: `${category} · goal ${unit}`, progress: 42 });
+  activateView('dashboard');
+});
+
+// ─── Drag & drop with indicator ──────────────────────────
+const dropInd  = document.getElementById('dropIndicator');
+const dragState = { el: null };
+
+grid.addEventListener('dragover', e => {
+  e.preventDefault();
+  if (!dragState.el) return;
+  const after = getAfterEl(grid, e.clientY);
+  if (after == null) {
+    grid.appendChild(dragState.el);
+  } else {
+    grid.insertBefore(dragState.el, after);
+  }
+});
+grid.addEventListener('dragleave', () => dropInd.classList.remove('visible'));
+
+function getAfterEl(container, y) {
+  const els = [...container.querySelectorAll('.widget-card:not(.dragging)')];
+  return els.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const off = y - box.top - box.height / 2;
+    return (off < 0 && off > closest.offset) ? { offset: off, element: child } : closest;
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// ─── Pomodoro timer ───────────────────────────────────────
+let timerInterval = null;
+let timerSecs     = 25 * 60;
+let timerMax      = 25 * 60;
+let timerRunning  = false;
+const timerDisp   = document.getElementById('timerDisplay');
+const timerArc    = document.getElementById('timerArc');
+const CIRCUMF     = 326.7;
+
+function updateTimerUI() {
+  const m = String(Math.floor(timerSecs / 60)).padStart(2, '0');
+  const s = String(timerSecs % 60).padStart(2, '0');
+  timerDisp.textContent = `${m}:${s}`;
+  const pct = timerSecs / timerMax;
+  timerArc.style.strokeDashoffset = CIRCUMF * (1 - pct);
+  timerDisp.classList.toggle('active-timer', timerRunning);
+}
+
+document.querySelectorAll('.timer-modes button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.timer-modes button').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+    clearInterval(timerInterval); timerRunning = false;
+    timerMax = parseInt(b.dataset.mins) * 60;
+    timerSecs = timerMax;
+    document.getElementById('timerStart').textContent = 'Start';
+    updateTimerUI();
+  });
+});
+
+document.getElementById('timerStart').addEventListener('click', function () {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerRunning = false;
+    this.textContent = 'Resume';
+  } else {
+    timerRunning = true;
+    this.textContent = 'Pause';
+    timerInterval = setInterval(() => {
+      if (timerSecs <= 0) {
+        clearInterval(timerInterval); timerRunning = false;
+        document.getElementById('timerStart').textContent = 'Start';
+        timerSecs = timerMax;
+      } else { timerSecs--; }
+      updateTimerUI();
+    }, 1000);
+  }
+  updateTimerUI();
+});
+
+document.getElementById('timerReset').addEventListener('click', () => {
+  clearInterval(timerInterval); timerRunning = false;
+  timerSecs = timerMax;
+  document.getElementById('timerStart').textContent = 'Start';
+  updateTimerUI();
+});
+updateTimerUI();
+
+// ─── Meal logging ─────────────────────────────────────────
+const mealFormArea = document.getElementById('mealFormArea');
+const mealInput    = document.getElementById('mealInput');
+const mealLog      = document.getElementById('mealLog');
+
+document.getElementById('logMealBtn').addEventListener('click', () => {
+  mealFormArea.style.display = 'grid';
+  mealInput.focus();
+});
+
+document.getElementById('addMealConfirm').addEventListener('click', () => {
+  const val = mealInput.value.trim();
+  if (!val) return;
+  const item = document.createElement('div');
+  item.className = 'log-item';
+  item.innerHTML = `<strong>${escHtml(val)}</strong><span>Just logged</span>`;
+  mealLog.appendChild(item);
+  mealInput.value = '';
+  mealFormArea.style.display = 'none';
+  showSaved('Meal logged');
+});
+mealInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('addMealConfirm').click(); });
+
+// ─── AI Coach ─────────────────────────────────────────────
+const chatContainer = document.getElementById('chatContainer');
+const chatInput     = document.getElementById('chatInput');
+
+// Context about the user for the coach
+const USER_CONTEXT = `You are an adaptive personal AI coach inside "Momentum OS", a productivity dashboard app.
+
+User's current data snapshot:
+- Life score: 82/100
+- Fitness: 9-week workout streak. Today: Push A (bench, OHP, incline DB, cable fly). Bench: 82.5 kg × 8 reps. Volume targets: Chest 78%, Back 62%, Legs 57%.
+- Nutrition: 2,120 kcal today. Protein 142g (86% of target). Carbs 238g. Fats 64g. Water 2.7L. Goal: lean strength.
+- Study: 76% weekly goal, 18-day streak.
+- Sleep/Mood: Calm, 7h 35m sleep last night.
+- Planning: deep work block at 08:30, push workout at 17:10, meal prep at 20:30.
+
+Be concise, direct, and evidence-based. Use bullet points only when listing multiple items. Personalize advice based on the data above. 2–4 sentences for normal answers; 5–8 for plans. Do not repeat the question back.`;
+
+async function sendChat(userMsg) {
+  appendMsg('user', userMsg);
+  chatInput.value = '';
+
+  const typingEl = appendMsg('ai', '…', true);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: USER_CONTEXT,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+    const reply = data.content?.find(b => b.type === 'text')?.text || 'No response.';
+    typingEl.remove();
+    appendMsg('ai', reply);
+  } catch (err) {
+    typingEl.remove();
+    appendMsg('ai', 'Unable to reach the coach right now. Check your connection and try again.');
+    console.error(err);
+  }
+}
+
+function appendMsg(role, text, isTyping = false) {
+  const el = document.createElement('div');
+  el.className = `chat-msg ${role}${isTyping ? ' typing' : ''}`;
+  if (role === 'ai' && !isTyping) {
+    // format markdown-ish bold
+    const formatted = escHtml(text)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    el.innerHTML = `<strong>Coach</strong><br>${formatted}`;
+  } else {
+    el.textContent = text;
+  }
+  chatContainer.appendChild(el);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  return el;
+}
+
+document.getElementById('chatSend').addEventListener('click', () => {
+  const msg = chatInput.value.trim();
+  if (msg) sendChat(msg);
+});
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('chatSend').click(); }
+});
+
+document.querySelectorAll('.quick-chip').forEach(b =>
+  b.addEventListener('click', () => sendChat(b.textContent)));
+    </script>
+  </body>
+</html>
