@@ -1,2 +1,2 @@
-# momentum
-A single-file personal productivity dashboard — tasks, food diary, exercise log, habit tracking, and nutrition breakdown. No backend, no dependencies.
+
+Personal productivity dashboard — widgets, AI coach, fitness tracker, and nutrition log. Single-file HTML/CSS/JS, no dependencies.
